@@ -4,15 +4,7 @@ import socket
 
 
 def main():
-    client()
-
-
-def client():
-    s = socket.socket()
-    port = 12345
-    s.connect(('127.0.0.1', port))
-    print(s.recv(1024))
-    s.close()
+    server()
 
 
 def server():
@@ -31,13 +23,6 @@ def server():
 
         c.close()
 
-
-def connect_to_google():
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    host_ip = socket.gethostbyname('www.google.com')
-    port = 80
-    s.connect((host_ip, port))
-    print(s)
 
 
 if __name__ == '__main__':
