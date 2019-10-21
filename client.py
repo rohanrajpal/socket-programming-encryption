@@ -11,7 +11,7 @@ def client():
     s = socket.socket()
     port = 12345
     s.connect(('0.0.0.0', port))
-    s.sendall('Here I am!'.encode())
+    s.send('Here I am!'.encode())
     print(s.recv(1024))
     s.close()
 

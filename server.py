@@ -1,6 +1,11 @@
 from __future__ import print_function
 
+import os
 import socket
+import random
+import struct
+from Crypto import Random
+from Crypto.Cipher import AES
 
 
 def main():
@@ -19,8 +24,34 @@ def server():
 
         print("Got connection from {}".format(addr))
         print(c.recv(1024))
-        filename = 'mytext.txt'
-        f = open(filename, 'rb')
+
+        infile = 'mytext.txt'
+        encfile = 'enctext.txt'
+
+        # Encryption
+        key = "00112233445566778899aabbccddeeff"
+        iv = os.urandom(16)
+        print(len(iv))
+        print(len(key))
+        # iv = Random.new().read(16)
+        aes = AES.new(key, AES.MODE_CBC, iv)
+
+        fsz = os.path.getsize(infile)
+        sz = 2048
+
+        with open(encfile, 'wb') as fout:
+            with open(infile) as fin:
+                while True:
+                    data = fin.read(sz)
+                    n = len(data)
+                    if n == 0:
+                        break
+                    elif n % 16 != 0:
+                        data += ' ' * (16 - n % 16)  # <- padded with spaces
+                    encd = aes.encrypt(data)
+                    fout.write(encd)
+
+        f = open(encfile, 'rb')
         l = f.read(1024)
         while l:
             c.send(l)
@@ -30,9 +61,7 @@ def server():
 
         print('Done sending')
 
-
         c.close()
-
 
 
 if __name__ == '__main__':
