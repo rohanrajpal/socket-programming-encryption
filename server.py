@@ -10,7 +10,7 @@ def main():
 def server():
     s = socket.socket()
     port = 12345
-    s.bind(('', port))
+    s.bind(('0.0.0.0', port))
     print("Socker binded to {}".format(port))
     # 5 here means that 5 connections are kept waiting if the server is busy
     s.listen(5)
@@ -18,11 +18,11 @@ def server():
         c, addr = s.accept()
 
         print("Got connection from {}".format(addr))
-
+        print(c.recv(1024))
         filename = 'mytext.txt'
         f = open(filename, 'rb')
         l = f.read(1024)
-        while (l):
+        while l:
             c.send(l)
             print('Sent ', repr(l))
             l = f.read(1024)
