@@ -19,7 +19,17 @@ def server():
 
         print("Got connection from {}".format(addr))
 
-        c.send(bytes('Thanks man\n', encoding='utf8'))
+        filename = 'mytext.txt'
+        f = open(filename, 'rb')
+        l = f.read(1024)
+        while (l):
+            c.send(l)
+            print('Sent ', repr(l))
+            l = f.read(1024)
+        f.close()
+
+        print('Done sending')
+
 
         c.close()
 
