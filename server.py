@@ -23,20 +23,24 @@ def server():
         c, addr = s.accept()
 
         print("Got connection from {}".format(addr))
-        print(c.recv(1024))
+        # print(c.recv(1024))
 
-        infile = 'mytext.txt'
+        infile = 'tempfile.txt'
+
+        with open(infile) as fout:
+            fout.write(c.recv(1024))
+
         encfile = 'enctext.txt'
 
         # Encryption
         key = "00112233445566778899aabbccddeeff"
         iv = os.urandom(16)
-        print(len(iv))
-        print(len(key))
+        # print(len(iv))
+        # print(len(key))
         # iv = Random.new().read(16)
         aes = AES.new(key, AES.MODE_CBC, iv)
 
-        fsz = os.path.getsize(infile)
+        # fsz = os.path.getsize(infile)
         sz = 2048
 
         with open(encfile, 'wb') as fout:
@@ -51,13 +55,7 @@ def server():
                     encd = aes.encrypt(data)
                     fout.write(encd)
 
-        f = open(encfile, 'rb')
-        l = f.read(1024)
-        while l:
-            c.send(l)
-            print('Sent ', repr(l))
-            l = f.read(1024)
-        f.close()
+
 
         print('Done sending')
 
