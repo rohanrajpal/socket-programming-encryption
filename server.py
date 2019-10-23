@@ -4,7 +4,7 @@ import os
 import socket
 from Crypto.Cipher import AES
 
-buffer_size = 20000
+buffer_size = 2
 key = "00112233445566778899aabbccddeeff"
 
 
@@ -48,11 +48,12 @@ def server():
 
             f.write(to_send)
 
-        f = open("mytext.txt", mode='rb')
+        f = open("tmp.txt", mode='rb')
         l = f.read(buffer_size)
 
         while l:
             c.send(l)
+            l = f.read(buffer_size)
 
         print('Done sending')
 

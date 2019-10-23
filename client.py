@@ -41,7 +41,11 @@ def send_file(s):
         l = f.read(buffer_size)
         # s.send(l)
 
+    while True:
         recd_data = s.recv(16 + buffer_size + 16 - (buffer_size % 16))
+
+        if recd_data is None:
+            break
         # print(len(recd_data))
         iv = recd_data[:16]
         aes = AES.new(key, AES.MODE_CBC, iv)
