@@ -45,8 +45,33 @@ def server():
         # expected no. of packets
         num_exp = num_pkt(fsize)
 
+
+        expected_frame = 0
+        next_frame_to_send = 1
+
+        alt_bit_buffer = 2
+
         for i in range(num_exp):
-            data = c.recv(buffer_size)
+            data = c.recv(buffer_size + alt_bit_buffer).decode()
+            # print("Received with ack", data)
+            ack = data[:2]
+            # print("Got ack",ack,type(ack[0]),ack[1],"Length",len(ack))
+
+            if ack[0] == str(expected_frame):
+                # print("In 1")
+                expected_frame = 1 - expected_frame
+            if ack[1] == str(next_frame_to_send):
+                # print("In 2")
+                next_frame_to_send = 1 - next_frame_to_send
+
+
+            sending_Ack = str(next_frame_to_send) + str(1 - expected_frame)
+            # print("Sending back ack", sending_Ack)
+            c.send(bytes(sending_Ack, encoding='utf-8'))
+
+            # Remove the ack headers
+            data = bytes(data[2:],encoding='utf-8')
+
             data = pad_upto_buf(data)
             # print("len_data_recvd", len(data))
 
@@ -61,6 +86,8 @@ def server():
             # print("Writing ecrypted data", to_send)
 
             f.write(to_send)
+
+
         # print("d")
         f = open("tmp.txt", mode='rb')
 

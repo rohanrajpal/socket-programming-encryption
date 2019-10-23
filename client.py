@@ -62,12 +62,29 @@ def send_file(s):
 
     l = f.read(buffer_size)
 
-    cnt = 0
-
+    next_frame_to_send = 0
+    expected_frame = 0
     while l:
-        cnt += 1
-        s.send(l)
+        # print("Sending",next_frame_to_send,1-expected_frame)
+
+        ack_send = str(next_frame_to_send) + str(1 - expected_frame)
+        to_send = bytes(ack_send, encoding='utf-8') + l
+
+        s.send(to_send)
         # print('Sent data', repr(l))
+        alt_bit_buffer = 2
+        ack = s.recv(alt_bit_buffer).decode()
+
+        # print("Ack is", ack,ack[0],ack[1])
+        if ack[0] == str(expected_frame):
+            expected_frame = 1 - expected_frame
+        # else:
+        #     print("Aborting",print(ack))
+            # exit()
+        if ack[1] == str(next_frame_to_send):
+            next_frame_to_send = 1-next_frame_to_send
+        # else:
+        #     assert False
         l = f.read(buffer_size)
 
     # print("done")
